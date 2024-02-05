@@ -7,7 +7,7 @@ import os
 def flatten(l):
     return[item for sublist in l for item in sublist]
 
-path = "/checkpoint/jayvakil/RoboSet_code/datasets/spot_data/spot_output_2023-12-08-20-19-34.pkl"
+path = "/home/jaydv/Documents/home-robot/data/hw_exps/spot/2024-01-23-15-05-59/spot_output_2024-01-23-15-05-59.pkl"
 ob = open(path, 'rb+')
 obj = pickle.load(ob)
 print(obj.keys())

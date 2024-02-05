@@ -1,0 +1,3 @@
+[submodule "datasets/spot_data"]
+	path = datasets/spot_data
+	url = https://huggingface.co/datasets/jdvakil/spot_data
