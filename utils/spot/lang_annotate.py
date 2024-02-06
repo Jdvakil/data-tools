@@ -2,7 +2,7 @@ import pickle
 import skvideo.io
 import numpy as np
 import os
-
+import json 
 from glob import glob
 
 import home_robot
@@ -70,6 +70,15 @@ def annotate(path : str):
 
     ob.close()
 
+def list_queries(path : str):
+    """
+    List queries for a given SPOT data file.
+    """
+    ob = open(path, 'rb+')
+    obj = pickle.load(ob)
+    print(json.dumps(obj['questions'],  sort_keys=True, indent=4))
+    ob.close()
+
 
 def main():
     """
@@ -78,12 +87,19 @@ def main():
     path = "/home/jaydv/Documents/data-tools/datasets/spot_data/exploration/"
     files = glob(path + "*.pkl")
     for file in files:
-        ask = input(f"Annotate {file}? (y/n): ")
-        if ask == 'y':
-            annotate(file)
+        print(f"File: {file}")
+        ann_file = file.replace("exploration/", "exploration/annotated/").replace(".pkl", "_queries.pkl")
+        if not os.path.exists(ann_file):
+            ask = input(f"Annotate {file}? (y/n): ")
+            if ask == 'y':
+                annotate(file)
+            else:
+                continue
         else:
+            print(f"Annotations already exist for {file}. Skipping...")
             continue
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    list_queries("/home/jaydv/Documents/data-tools/datasets/spot_data/exploration/annotated/spot_output_2023-12-13-16-19-13_queries.pkl")
