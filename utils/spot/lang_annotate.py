@@ -43,7 +43,7 @@ def annotate(path : str):
     Annotation tool for SPOT data.
     """
     filename = path.split("/")[-1].replace(".pkl", "_queries.pkl")
-    filepath = "/home/jaydv/Documents/data-tools/datasets/spot_data/" + filename
+    filepath = "/home/jaydv/Documents/data-tools/datasets/spot_data/exploration/annotated/" + filename
     ob = open(path, 'rb+')
     obj = pickle.load(ob)
     render(path)
@@ -69,3 +69,21 @@ def annotate(path : str):
         f.close()
 
     ob.close()
+
+
+def main():
+    """
+    Main function.
+    """
+    path = "/home/jaydv/Documents/data-tools/datasets/spot_data/exploration/"
+    files = glob(path + "*.pkl")
+    for file in files:
+        ask = input(f"Annotate {file}? (y/n): ")
+        if ask == 'y':
+            annotate(file)
+        else:
+            continue
+
+
+if __name__ == "__main__":
+    main()
