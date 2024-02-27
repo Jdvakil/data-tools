@@ -56,12 +56,12 @@ def robohive2roboset(rollout_path, output_dir=None, max_paths=1e6):
             "d_right"   : value['env_infos']['visual_dict']['d:right_cam:240x424:2d'],
             "d_top"     : value['env_infos']['visual_dict']['d:top_cam:240x424:2d'],
             "d_wrist"   : value['env_infos']['visual_dict']['d:Franka_wrist_cam:240x424:2d'],
-            # "qp_arm"    : value['env_infos']['obs_dict']['qp_arm'],
-            # "qp_ee"     : value['env_infos']['obs_dict']['qp_ee'],
-            # "qv_arm"    : value['env_infos']['obs_dict']['qv_arm'],
-            # "qv_ee"     : value['env_infos']['obs_dict']['qv_ee'],
-            # "ctrl_arm"  : value['env_infos']['obs_dict']['ctrl_arm'],
-            # "ctrl_ee"   : value['env_infos']['obs_dict']['ctrl_ee'],
+            "qp_arm"    : value['env_infos']['obs_dict']['qp_arm'],
+            "qp_ee"     : value['env_infos']['obs_dict']['qp_ee'],
+            "qv_arm"    : value['env_infos']['obs_dict']['qv_arm'],
+            "qv_ee"     : value['env_infos']['obs_dict']['qv_ee'],
+            "ctrl_arm"  : value['env_infos']['obs_dict']['ctrl_arm'],
+            "ctrl_ee"   : value['env_infos']['obs_dict']['ctrl_ee'],
         }
 
         if 'pos_ee' in value['env_infos/obs_dict'].keys():

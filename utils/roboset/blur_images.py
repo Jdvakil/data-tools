@@ -18,7 +18,6 @@ def flatten(l):
 @jit(target_backend ="cuda", forceobj=True)
 def blur(dir_path):
     task_name = os.path.basename(dir_path[:-1])
-    #task_name = name.replace(name[:-5], "pick_ketchup_from_table_place_on_plate")
     if not os.path.isdir(os.path.join(os.getcwd(),task_name)):
         os.mkdir(task_name)
         print(f"made dir -- {task_name}")
@@ -31,21 +30,17 @@ def blur(dir_path):
     radius = 50
     intensity = 11
 
-
-    # left_cereal = [215,10]
-    # #left_tea = [305,30]
-
-    # top_cereal=[830-424,30]
-    # #top_tea = [805-424, 180]
-
-    right_me = [45,25]
-    #right_tea = [865-(424*2), 95]
+    # Coordinates of object that need to be blurred
+    right_object = [0,0]
+    left_object = [0,0]
+    top_object = [0,0]
+    wrist_object = [0,0]
 
     #Keep appending 
-    # left_coords = [left_cereal] #left_tea]
-    # top_coords = [top_cereal]#, top_tea] 
-    right_coords = [right_me] # , right_tea]
-    #wrist_coords = [wrist_butter]
+    right_coords = [right_object]
+    left_coords = [left_object]
+    top_coords = [top_object]
+    wrist_coords  = [wrist_coords]  
 
     rgb_frames = []
     for path in natsorted(glob(dir_path + "*.h5")):
@@ -77,10 +72,10 @@ def blur(dir_path):
             cams['qv_arm']    = h5[f'{value}/data/qv_arm']
             cams['ctrl_arm']  = h5[f'{value}/data/ctrl_arm']
             cams['ctrl_ee']   = h5[f'{value}/data/ctrl_ee']
-            cams['rgb_left'] = h5[f'{value}/data/rgb_left']
-            cams['rgb_top'] = h5[f'{value}/data/rgb_top']
-            #cams['rgb_right'] = h5[f'{value}/data/rgb_right']
-            cams['rgb_wrist'] = h5[f'{value}/data/rgb_wrist']
+            # cams['rgb_left'] = h5[f'{value}/data/rgb_left']
+            # cams['rgb_top'] = h5[f'{value}/data/rgb_top']
+            # cams['rgb_right'] = h5[f'{value}/data/rgb_right']
+            # cams['rgb_wrist'] = h5[f'{value}/data/rgb_wrist']
             
             if 'derived' in list(h5[value].keys()):
                 derived_keys = list(h5[f'{value}/derived'].keys())
@@ -108,28 +103,28 @@ def blur(dir_path):
                 mask_right = np.ones((240, 424, 3), dtype=np.uint8)
                 mask_wrist = np.ones((240, 424, 3), dtype=np.uint8)
                 
-                # for l in left_coords:
-                #     mask_left = cv2.circle(mask_left, (l[0],l[1]), radius, (100, 100, 100), -1)
-                #     out_left = np.where(mask_left==(1, 1, 1), img_left, blurred_img_left)
-                # for t in top_coords:
-                #     mask_top = cv2.circle(mask_top, (t[0],t[1]), radius, (100, 100, 100), -1)
-                #     out_top = np.where(mask_top==(1, 1, 1), img_top, blurred_img_top)
+                for l in left_coords:
+                    mask_left = cv2.circle(mask_left, (l[0],l[1]), radius, (100, 100, 100), -1)
+                    out_left = np.where(mask_left==(1, 1, 1), img_left, blurred_img_left)
+                for t in top_coords:
+                    mask_top = cv2.circle(mask_top, (t[0],t[1]), radius, (100, 100, 100), -1)
+                    out_top = np.where(mask_top==(1, 1, 1), img_top, blurred_img_top)
                 for r in right_coords:
                     mask_right = cv2.circle(mask_right, (r[0],r[1]), radius, (100, 100, 100), -1)
                     out_right = np.where(mask_right==(1, 1, 1), img_right, blurred_img_right)
-                # for w in wrist_coords:
-                #     mask_wrist = cv2.circle(mask_wrist, (w[0],w[1]), radius, (100, 100, 100), -1)
-                #     out_wrist = np.where(mask_wrist==(1, 1, 1), img_wrist, blurred_img_wrist)
+                for w in wrist_coords:
+                    mask_wrist = cv2.circle(mask_wrist, (w[0],w[1]), radius, (100, 100, 100), -1)
+                    out_wrist = np.where(mask_wrist==(1, 1, 1), img_wrist, blurred_img_wrist)
 
-                # rgb_left.append(np.asarray(out_left))
-                # rgb_top.append(np.asarray(out_top))
+                rgb_left.append(np.asarray(out_left))
+                rgb_top.append(np.asarray(out_top))
                 rgb_right.append(np.asarray(out_right))
-                #rgb_wrist.append(np.asarray(out_wrist))
+                rgb_wrist.append(np.asarray(out_wrist))
 
-            # cams['rgb_left'] = np.asarray(rgb_left)
-            # cams['rgb_top'] = np.asarray(rgb_top)
+            cams['rgb_left'] = np.asarray(rgb_left)
+            cams['rgb_top'] = np.asarray(rgb_top)
             cams['rgb_right'] = np.asarray(rgb_right)
-            #cams['rgb_wrist'] = np.asarray(rgb_wrist) 
+            cams['rgb_wrist'] = np.asarray(rgb_wrist) 
 
             rgb_frames.append(np.dstack((cams['rgb_left'], rgb_right, cams['rgb_top'], cams['rgb_wrist'])))
         
@@ -151,10 +146,9 @@ def blur(dir_path):
     print(len(frames))
     skvideo.io.vwrite(f"{filename_mp4}", np.asarray(frames))
     os.system(f'ffmpeg -i {filename_mp4} -vf "setpts=0.045*PTS" {task_name}_flash.mp4')
-    #os.remove(f"{filename_mp4}")
     print(f"Saving {filename_mp4}... size: {np.asarray(frames).shape}")
 
-@click.command(help="efhekfhew")
+@click.command(help="Blur coordinates in images")
 @click.option('-p','--path', type=str, help='directory path')
 def utils(path):
     start = timer()
