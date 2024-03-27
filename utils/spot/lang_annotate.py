@@ -82,6 +82,21 @@ def list_queries(path : str):
     print(json.dumps(obj['questions'],  sort_keys=True, indent=4))
     ob.close()
 
+def list_all(path : str):
+    """
+    List queries for a given SPOT data file.
+    """
+    ob = open(path, 'rb+')
+    obj = pickle.load(ob)
+    print(obj)
+    ob.close()
+
+def read_pickle_and_write_to_text(input_file, output_file):
+    with open(input_file, 'rb') as f:
+        data = pickle.load(f)
+    
+    with open(output_file, 'w') as f:
+        f.write(str(data))
 
 def main():
     """
