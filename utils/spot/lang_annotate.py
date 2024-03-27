@@ -4,6 +4,7 @@ import numpy as np
 import os
 import json 
 from glob import glob
+from natsort import natsorted
 
 import home_robot
 
@@ -54,10 +55,12 @@ def annotate(path : str):
         ask = input("Do you want to annotate this category? (y/n): ")
         if ask == 'y':
             query = input(f"Enter query for {cat}: ")
+            answer = input(f"Enter the ground truth answer for {cat}: ")
             while query != "":
-                qlist.append(query)
-                print(f"Query added to list. {len(qlist)} queries in list.")   
+                qlist.append((query, answer))
+                print(f"Query added to list. {len(qlist)} Q/A in list.")   
                 query = input(f"Enter query for {cat}: ")
+                answer = input(f"Enter the ground truth answer for {cat}: ")
             print("Query cannot be empty. Skipping...")
             queries[cat] = qlist
             qlist = []
